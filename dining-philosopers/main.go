@@ -25,19 +25,23 @@ var eatTime = 1 * time.Second
 var thinkTime = 3 * time.Second
 var sleepTime = 1 * time.Second
 
+var orderMutex sync.Mutex
+var orderFinished []string
+
 func main() {
 	fmt.Println("Dining Philosophers Problem")
 	fmt.Println("---------------------------")
 	fmt.Println("The table is empty.")
 
+	time.Sleep(sleepTime)
+
 	dine()
 
 	fmt.Println("The table is empty.")
-
+	fmt.Printf("Order finished: %v\n", orderFinished)
 }
 
 func dine() {
-
 	eatTime = 0 * time.Second
 	sleepTime = 0 * time.Second
 	thinkTime = 0 * time.Second
@@ -95,4 +99,8 @@ func diningProblem(philosopher Philosopher, wg *sync.WaitGroup, forks map[int]*s
 
 	fmt.Println(philosopher.name, "is satisified.")
 	fmt.Println(philosopher.name, "left the table.")
+
+	orderMutex.Lock()
+	orderFinished = append(orderFinished, philosopher.name)
+	orderMutex.Unlock()
 }
